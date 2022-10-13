@@ -4,11 +4,13 @@ A wrapper for LINE Notify API
 
 import os.path
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Tuple, Union
 
 import requests
 
 API_ROOT = "https://notify-api.line.me/api"
+
+_Timeout = Optional[Union[float, Tuple[float, float], Tuple[float, None]]]
 
 
 @dataclass
@@ -47,6 +49,7 @@ class LineNotify:
         sticker_package_id: int = None,
         sticker_id: int = None,
         notification_disabled: bool = None,
+        timeout: _Timeout = None,
     ) -> NotifyResponse:
         """Notify message to LINE Notify
 
@@ -58,6 +61,8 @@ class LineNotify:
             sticker_package_id (int, optional): Package ID of sticker. Defaults to None. Must be set with sticker_id.
             sticker_id (int, optional): ID of sticker. Defaults to None. Must be set with sticker_package_id.
             notification_disabled (bool, optional): Disable notification. Defaults to None.
+            timeout (Optional[Union[float, Tuple[float, float], Tuple[float, None]]], optional):
+            Timeout of request. Defaults to None.
 
         Returns:
             NotifyResponse: Response from LINE Notify API
@@ -82,12 +87,16 @@ class LineNotify:
             files = None
 
         header = {"Authorization": f"Bearer {self.token}"}
-        response = requests.post(API_ROOT + path, headers=header, data=payload, files=files)
+        response = requests.post(API_ROOT + path, headers=header, data=payload, files=files, timeout=timeout)
 
         return NotifyResponse(**response.json())
 
-    def status(self) -> StatusResponse:
+    def status(self, timeout: _Timeout = None) -> StatusResponse:
         """Get status of LINE Notify
+
+        args:
+            timeout (Optional[Union[float, Tuple[float, float], Tuple[float, None]]], optional):
+            Timeout of request. Defaults to None.
 
         returns:
             StatusResponse: Response from LINE Notify API
@@ -95,7 +104,7 @@ class LineNotify:
         path = "/status"
 
         header = {"Authorization": f"Bearer {self.token}"}
-        response = requests.get(API_ROOT + path, headers=header)
+        response = requests.get(API_ROOT + path, headers=header, timeout=timeout)
         body = response.json()
 
         if body["status"] == 200:
