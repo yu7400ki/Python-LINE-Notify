@@ -13,6 +13,14 @@ class NotifyResponse:
 
 
 @dataclass
+class StatusResponse:
+    status: int
+    message: str
+    target_type: str
+    target: str
+
+
+@dataclass
 class LineNotify:
     token: str
 
@@ -49,3 +57,15 @@ class LineNotify:
         response = requests.post(API_ROOT + path, headers=header, data=payload, files=files)
 
         return NotifyResponse(**response.json())
+
+    def status(self) -> StatusResponse:
+        path = "/status"
+
+        header = {"Authorization": f"Bearer {self.token}"}
+        response = requests.get(API_ROOT + path, headers=header)
+
+        body = response.json()
+
+        return StatusResponse(
+            status=body["status"], message=body["message"], target_type=body["targetType"], target=body["target"]
+        )
