@@ -19,9 +19,9 @@ class TestLineNotify(unittest.TestCase):
     def test_notify_with_image(self) -> None:
         token = TOKEN
         message = platform.python_version()
-        image_file = open("tests/test.png", "rb")
+        image_path = "tests/test.png"
         line_notify = LineNotify(token)
-        response = line_notify.notify(message, image_file=image_file)
+        response = line_notify.notify(message, image_path=image_path)
         self.assertIsInstance(response, NotifyResponse)
         self.assertEqual(response.status, 200)
 

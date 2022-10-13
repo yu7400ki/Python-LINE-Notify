@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from io import BufferedReader
 from typing import Optional
 
 import requests
@@ -30,7 +29,7 @@ class LineNotify:
         message: str,
         image_thumbnail: str = None,
         image_fullsize: str = None,
-        image_file: BufferedReader = None,
+        image_path: str = None,
         sticker_package_id: int = None,
         sticker_id: int = None,
         notification_disabled: bool = None,
@@ -49,8 +48,8 @@ class LineNotify:
         if notification_disabled is not None:
             payload["notificationDisabled"] = "true" if notification_disabled else "false"
 
-        if image_file is not None:
-            files = {"imageFile": image_file}
+        if image_path is not None:
+            files = {"imageFile": open(image_path, "rb")}
         else:
             files = None
 
