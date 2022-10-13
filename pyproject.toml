@@ -31,6 +31,7 @@ extend-ignore = "E203,"
 exclude = [
     ".git",
     ".venv",
+    "**/__init__.py",
     ]
 
 [tool.black]
@@ -41,6 +42,7 @@ exclude = """
 (
       \\.git
     | \\.venv
+    | \\**/__init__.py
 )
 """
 
