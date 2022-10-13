@@ -1,3 +1,8 @@
+"""
+A wrapper for LINE Notify API
+"""
+
+import os.path
 from dataclasses import dataclass
 from typing import Optional
 
@@ -22,6 +27,15 @@ class StatusResponse:
 
 @dataclass
 class LineNotify:
+    """Create a LineNotify instance
+    doc: https://notify-bot.line.me/doc/
+
+    args:
+        token: LINE Notify access token
+    returns:
+        LineNotify instance
+    """
+
     token: str
 
     def notify(
@@ -34,6 +48,20 @@ class LineNotify:
         sticker_id: int = None,
         notification_disabled: bool = None,
     ) -> NotifyResponse:
+        """Notify message to LINE Notify
+
+        Args:
+            message (str): Message to send
+            image_thumbnail (str, optional): URL of image thumbnail. Defaults to None. Must be set with image_fullsize.
+            image_fullsize (str, optional): URL of image fullsize. Defaults to None. Must be set with image_thumbnail.
+            image_path (str, optional): Path of image to send. Defaults to None.
+            sticker_package_id (int, optional): Package ID of sticker. Defaults to None. Must be set with sticker_id.
+            sticker_id (int, optional): ID of sticker. Defaults to None. Must be set with sticker_package_id.
+            notification_disabled (bool, optional): Disable notification. Defaults to None.
+
+        Returns:
+            NotifyResponse: Response from LINE Notify API
+        """
         path = "/notify"
 
         payload = {"message": message}
@@ -48,7 +76,7 @@ class LineNotify:
         if notification_disabled is not None:
             payload["notificationDisabled"] = "true" if notification_disabled else "false"
 
-        if image_path is not None:
+        if image_path is not None and os.path.isfile(image_path):
             files = {"imageFile": open(image_path, "rb")}
         else:
             files = None
@@ -59,6 +87,11 @@ class LineNotify:
         return NotifyResponse(**response.json())
 
     def status(self) -> StatusResponse:
+        """Get status of LINE Notify
+
+        returns:
+            StatusResponse: Response from LINE Notify API
+        """
         path = "/status"
 
         header = {"Authorization": f"Bearer {self.token}"}
