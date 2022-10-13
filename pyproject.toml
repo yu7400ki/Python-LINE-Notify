@@ -9,7 +9,7 @@ packages = [{include = "line_notify", from = "src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4"
-requests = "^2.28.1"
+requests = "*"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "*"
@@ -19,7 +19,7 @@ flake8-builtins = "*"
 pre-commit = "*"
 pyproject-flake8 = "*"
 mypy = "*"
-types-requests = "^2.28.11.2"
+types-requests = "*"
 
 [build-system]
 requires = ["poetry-core"]
