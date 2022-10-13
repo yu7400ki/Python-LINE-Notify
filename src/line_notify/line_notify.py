@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from io import BufferedReader
+from typing import Optional
 
 import requests
 
@@ -16,8 +17,8 @@ class NotifyResponse:
 class StatusResponse:
     status: int
     message: str
-    target_type: str
-    target: str
+    target_type: Optional[str]
+    target: Optional[str]
 
 
 @dataclass
@@ -63,9 +64,11 @@ class LineNotify:
 
         header = {"Authorization": f"Bearer {self.token}"}
         response = requests.get(API_ROOT + path, headers=header)
-
         body = response.json()
 
-        return StatusResponse(
-            status=body["status"], message=body["message"], target_type=body["targetType"], target=body["target"]
-        )
+        if body["status"] == 200:
+            return StatusResponse(
+                status=body["status"], message=body["message"], target_type=body["targetType"], target=body["target"]
+            )
+        else:
+            return StatusResponse(status=body["status"], message=body["message"], target_type=None, target=None)
