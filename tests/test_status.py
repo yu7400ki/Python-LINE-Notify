@@ -11,7 +11,16 @@ class TestLineNotify(unittest.TestCase):
         line_notify = LineNotify(token)
         response = line_notify.status()
         self.assertIsInstance(response, StatusResponse)
-        self.assertEqual(response.status, 200)
+        self.assertIsInstance(response.body, StatusResponse.StatusResponseBody)
+        self.assertEqual(response.body.status, 200)
+
+    def test_status_fail(self) -> None:
+        token = "invalid_token"
+        line_notify = LineNotify(token)
+        response = line_notify.status()
+        self.assertIsInstance(response, StatusResponse)
+        self.assertIsInstance(response.body, StatusResponse.StatusResponseBody)
+        self.assertEqual(response.body.status, 401)
 
 
 if __name__ == "__main__":

@@ -4,27 +4,15 @@ A wrapper for LINE Notify API
 
 import os.path
 from dataclasses import dataclass
-from typing import Optional, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 import requests
+
+from .response import NotifyResponse, StatusResponse
 
 API_ROOT = "https://notify-api.line.me/api"
 
 _Timeout = Optional[Union[float, Tuple[float, float], Tuple[float, None]]]
-
-
-@dataclass
-class NotifyResponse:
-    status: int
-    message: str
-
-
-@dataclass
-class StatusResponse:
-    status: int
-    message: str
-    target_type: Optional[str]
-    target: Optional[str]
 
 
 @dataclass
@@ -69,17 +57,17 @@ class LineNotify:
         """
         path = "/notify"
 
-        payload = {"message": message}
+        payload: Dict[str, Union[str, int, bool]] = {"message": message}
         if image_thumbnail is not None:
             payload["imageThumbnail"] = image_thumbnail
         if image_fullsize is not None:
             payload["imageFullsize"] = image_fullsize
         if sticker_package_id is not None:
-            payload["stickerPackageId"] = str(sticker_package_id)
+            payload["stickerPackageId"] = sticker_package_id
         if sticker_id is not None:
-            payload["stickerId"] = str(sticker_id)
+            payload["stickerId"] = sticker_id
         if notification_disabled is not None:
-            payload["notificationDisabled"] = "true" if notification_disabled else "false"
+            payload["notificationDisabled"] = notification_disabled
 
         if image_path is not None and os.path.isfile(image_path):
             files = {"imageFile": open(image_path, "rb")}
@@ -89,7 +77,7 @@ class LineNotify:
         header = {"Authorization": f"Bearer {self.token}"}
         response = requests.post(API_ROOT + path, headers=header, data=payload, files=files, timeout=timeout)
 
-        return NotifyResponse(**response.json())
+        return NotifyResponse(response)
 
     def status(self, timeout: _Timeout = None) -> StatusResponse:
         """Get status of LINE Notify
@@ -105,11 +93,5 @@ class LineNotify:
 
         header = {"Authorization": f"Bearer {self.token}"}
         response = requests.get(API_ROOT + path, headers=header, timeout=timeout)
-        body = response.json()
 
-        if body["status"] == 200:
-            return StatusResponse(
-                status=body["status"], message=body["message"], target_type=body["targetType"], target=body["target"]
-            )
-        else:
-            return StatusResponse(status=body["status"], message=body["message"], target_type=None, target=None)
+        return StatusResponse(response)
