@@ -3,7 +3,7 @@ import unittest
 
 from setting import TOKEN
 
-from line_notify import LineNotify, NotifyResponse
+from line_notify import LineNotify, LineNotifyConnectTimeout, LineNotifyReadTimeout, NotifyResponse
 
 
 class TestLineNotify(unittest.TestCase):
@@ -27,6 +27,17 @@ class TestLineNotify(unittest.TestCase):
         self.assertIsInstance(response.body, NotifyResponse.NotifyResponseBody)
         self.assertEqual(response.body.status, 401)
         self.assertEqual(response.body.message, "Invalid access token")
+
+    def test_notify_timeout(self) -> None:
+        token = TOKEN
+        message = "timeout"
+        line_notify = LineNotify(token)
+        try:
+            line_notify.notify(message, timeout=0.01)
+        except LineNotifyConnectTimeout as e:
+            print(e)
+        except LineNotifyReadTimeout as e:
+            print(e)
 
     def test_notify_with_image(self) -> None:
         token = TOKEN

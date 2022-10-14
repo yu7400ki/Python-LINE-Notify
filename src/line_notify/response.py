@@ -3,6 +3,8 @@ from typing import Optional
 
 import requests
 
+from .exceptions import LineNotifyHTTPError
+
 
 class _BaseResponse:
     def __init__(self, response: requests.Response) -> None:
@@ -13,7 +15,7 @@ class _BaseResponse:
         return f"{self.__class__.__name__}({self.response!r})"
 
     def raise_for_status(self) -> None:
-        self.response.raise_for_status()
+        ...
 
     @property
     def status(self) -> int:
@@ -23,10 +25,24 @@ class _BaseResponse:
     def ok(self) -> bool:
         return self.response.ok
 
+    @property
+    def encoding(self) -> Optional[str]:
+        return self.response.encoding
+
+    @encoding.setter
+    def encoding(self, encoding: str) -> None:
+        self.response.encoding = encoding
+
 
 class NotifyResponse(_BaseResponse):
     def __init__(self, response: requests.Response) -> None:
         super().__init__(response)
+
+    def raise_for_status(self) -> None:
+        try:
+            self.response.raise_for_status()
+        except requests.HTTPError:
+            raise LineNotifyHTTPError(self.body.status, self.body.message)
 
     @dataclass
     class NotifyResponseBody:
@@ -41,6 +57,12 @@ class NotifyResponse(_BaseResponse):
 class StatusResponse(_BaseResponse):
     def __init__(self, response: requests.Response) -> None:
         super().__init__(response)
+
+    def raise_for_status(self) -> None:
+        try:
+            self.response.raise_for_status()
+        except requests.HTTPError:
+            raise LineNotifyHTTPError(self.body.status, self.body.message)
 
     @dataclass
     class StatusResponseBody:

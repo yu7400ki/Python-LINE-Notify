@@ -8,6 +8,7 @@ from typing import Dict, Optional, Tuple, Union
 
 import requests
 
+from .exceptions import LineNotifyConnectTimeout, LineNotifyReadTimeout
 from .response import NotifyResponse, StatusResponse
 
 API_ROOT = "https://notify-api.line.me/api"
@@ -75,7 +76,13 @@ class LineNotify:
             files = None
 
         header = {"Authorization": f"Bearer {self.token}"}
-        response = requests.post(API_ROOT + path, headers=header, data=payload, files=files, timeout=timeout)
+
+        try:
+            response = requests.post(API_ROOT + path, headers=header, data=payload, files=files, timeout=timeout)
+        except requests.exceptions.ConnectTimeout as e:
+            raise LineNotifyConnectTimeout(e)
+        except requests.exceptions.ReadTimeout as e:
+            raise LineNotifyReadTimeout(e)
 
         return NotifyResponse(response)
 
@@ -92,6 +99,12 @@ class LineNotify:
         path = "/status"
 
         header = {"Authorization": f"Bearer {self.token}"}
-        response = requests.get(API_ROOT + path, headers=header, timeout=timeout)
+
+        try:
+            response = requests.get(API_ROOT + path, headers=header, timeout=timeout)
+        except requests.exceptions.ConnectTimeout as e:
+            raise LineNotifyConnectTimeout(e)
+        except requests.exceptions.ReadTimeout as e:
+            raise LineNotifyReadTimeout(e)
 
         return StatusResponse(response)
