@@ -26,7 +26,7 @@ from line_notify import LineNotify
 client = LineNotify("Your Token")
 
 response = client.status()
-assert response.status == 200 # if token is valid
+response.raise_for_status() # if token is valid, return None
 
 response = client.notify("only text")
 response = client.notify("with image(path)", image_path="/image.png")
@@ -34,8 +34,8 @@ response = client.notify("with image(url)", image_thumbnail=image_thumbnail_url,
 response = client.notify("with sticker", sticker_package_id=789, sticker_id=10859)
 response = client.notify("If you do not wish to be notified", notification_disabled=True)
 
-assert response.status == 200
-assert response.message == "ok"
+assert response.body.status == 200
+assert response.body.message == "ok"
 ```
 
 詳しいAPIの仕様については以下をご覧ください。
