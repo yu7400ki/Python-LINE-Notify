@@ -71,7 +71,8 @@ class LineNotify:
             payload["notificationDisabled"] = notification_disabled
 
         if image_path is not None and os.path.isfile(image_path):
-            files = {"imageFile": open(image_path, "rb")}
+            f = open(image_path, "rb")
+            files = {"imageFile": f}
         else:
             files = None
 
@@ -83,6 +84,9 @@ class LineNotify:
             raise LineNotifyConnectTimeout(e)
         except requests.exceptions.ReadTimeout as e:
             raise LineNotifyReadTimeout(e)
+
+        if files is not None:
+            f.close()
 
         return NotifyResponse(response)
 
