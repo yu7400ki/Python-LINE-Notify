@@ -1,7 +1,11 @@
-from requests import ConnectTimeout, HTTPError, ReadTimeout
+from requests import ConnectionError, ConnectTimeout, HTTPError, ReadTimeout
 
 
 class LineNotifyHTTPError(HTTPError):
+    pass
+
+
+class LineNotifyConnectionTimeout(ConnectionError):
     pass
 
 

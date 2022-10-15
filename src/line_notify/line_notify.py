@@ -8,7 +8,7 @@ from typing import Dict, Optional, Tuple, Union
 
 import requests
 
-from .exceptions import LineNotifyConnectTimeout, LineNotifyReadTimeout
+from .exceptions import LineNotifyConnectionTimeout, LineNotifyConnectTimeout, LineNotifyReadTimeout
 from .response import NotifyResponse, StatusResponse
 
 API_ROOT = "https://notify-api.line.me/api"
@@ -84,6 +84,8 @@ class LineNotify:
             raise LineNotifyConnectTimeout(e)
         except requests.exceptions.ReadTimeout as e:
             raise LineNotifyReadTimeout(e)
+        except requests.exceptions.ConnectionError as e:
+            raise LineNotifyConnectionTimeout(e)
 
         if files is not None:
             f.close()
