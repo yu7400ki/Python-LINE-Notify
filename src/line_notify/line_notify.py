@@ -116,6 +116,8 @@ class LineNotify:
             raise LineNotifyConnectTimeout(e)
         except requests.exceptions.ReadTimeout as e:
             raise LineNotifyReadTimeout(e)
+        except requests.exceptions.ConnectionError as e:
+            raise LineNotifyConnectionTimeout(e)
 
         response.__class__ = StatusResponse
 
