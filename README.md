@@ -9,7 +9,7 @@ PythonのLINE Notify APIのラッパーです。
 Python >=3.7, <4
 
 ```
-$ pip install git+https://github.com/yu7400ki/Python-LINE-Notify.git@v0.2.0
+$ pip install git+https://github.com/yu7400ki/Python-LINE-Notify.git@v0.2.1
 ```
 
 ## 使い方
@@ -25,12 +25,12 @@ from line_notify import LineNotify
 
 client = LineNotify("Your Token")
 
-response = client.status()
+response = client.status()  # response is subclass for requests.Response
 response.raise_for_status() # if token is valid, return None
 
 response = client.notify("only text")
 response = client.notify("with image(path)", image_path="/image.png")
-response = client.notify("with image(url)", image_thumbnail=image_thumbnail_url, image_fullsize=image_fullsize_url)
+response = client.notify("with image(url)", image_thumbnail=https://..., image_fullsize=https://...)
 response = client.notify("with sticker", sticker_package_id=789, sticker_id=10859)
 response = client.notify("If you do not wish to be notified", notification_disabled=True)
 
