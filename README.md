@@ -9,7 +9,7 @@ PythonのLINE Notify APIのラッパーです。
 Python >=3.7, <4
 
 ```
-$ pip install git+https://github.com/yu7400ki/Python-LINE-Notify.git@v0.2.1
+$ pip install git+https://github.com/yu7400ki/Python-LINE-Notify.git@v0.2.2
 ```
 
 ## 使い方
