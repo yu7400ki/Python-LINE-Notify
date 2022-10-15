@@ -1,48 +1,26 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import requests
+from requests import Response
 
 from .exceptions import LineNotifyHTTPError
 
 
-class _BaseResponse:
-    def __init__(self, response: requests.Response) -> None:
-        self.response = response
-        self.headers = response.headers
-
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}({self.response!r})"
+class NotifyResponse(Response):
+    def __init__(self) -> None:
+        super().__init__()
 
     def raise_for_status(self) -> None:
-        ...
+        http_error_msg = ""
 
-    @property
-    def status(self) -> int:
-        return self.response.status_code
+        if 400 <= self.status_code < 500:
+            http_error_msg = f"{self.status_code} Client Error: {self.body.message} for url: {self.url}"
 
-    @property
-    def ok(self) -> bool:
-        return self.response.ok
+        elif 500 <= self.status_code < 600:
+            http_error_msg = f"{self.status_code} Server Error: {self.body.message} for url: {self.url}"
 
-    @property
-    def encoding(self) -> Optional[str]:
-        return self.response.encoding
-
-    @encoding.setter
-    def encoding(self, encoding: str) -> None:
-        self.response.encoding = encoding
-
-
-class NotifyResponse(_BaseResponse):
-    def __init__(self, response: requests.Response) -> None:
-        super().__init__(response)
-
-    def raise_for_status(self) -> None:
-        try:
-            self.response.raise_for_status()
-        except requests.HTTPError:
-            raise LineNotifyHTTPError(self.body.status, self.body.message)
+        if http_error_msg:
+            raise LineNotifyHTTPError(http_error_msg, response=self)
 
     @dataclass
     class NotifyResponseBody:
@@ -51,18 +29,24 @@ class NotifyResponse(_BaseResponse):
 
     @property
     def body(self) -> NotifyResponseBody:
-        return self.NotifyResponseBody(**self.response.json())
+        return self.NotifyResponseBody(**self.json())
 
 
-class StatusResponse(_BaseResponse):
-    def __init__(self, response: requests.Response) -> None:
-        super().__init__(response)
+class StatusResponse(Response):
+    def __init__(self) -> None:
+        super().__init__()
 
     def raise_for_status(self) -> None:
-        try:
-            self.response.raise_for_status()
-        except requests.HTTPError:
-            raise LineNotifyHTTPError(self.body.status, self.body.message)
+        http_error_msg = ""
+
+        if 400 <= self.status_code < 500:
+            http_error_msg = f"{self.status_code} Client Error: {self.body.message} for url: {self.url}"
+
+        elif 500 <= self.status_code < 600:
+            http_error_msg = f"{self.status_code} Server Error: {self.body.message} for url: {self.url}"
+
+        if http_error_msg:
+            raise LineNotifyHTTPError(http_error_msg, response=self)
 
     @dataclass
     class StatusResponseBody:
@@ -73,7 +57,7 @@ class StatusResponse(_BaseResponse):
 
     @property
     def body(self) -> StatusResponseBody:
-        body = self.response.json()
+        body = self.json()
         return self.StatusResponseBody(
             status=body["status"],
             message=body["message"],

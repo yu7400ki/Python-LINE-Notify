@@ -47,7 +47,7 @@ class TestLineNotify(unittest.TestCase):
         response = line_notify.notify(message, image_path=image_path)
         self.assertIsInstance(response, NotifyResponse)
         self.assertIsInstance(response.body, NotifyResponse.NotifyResponseBody)
-        self.assertEqual(response.status, 200)
+        self.assertEqual(response.body.status, 200)
         self.assertEqual(response.body.message, "ok")
 
     def test_notify_with_image_url(self) -> None:
@@ -59,7 +59,7 @@ class TestLineNotify(unittest.TestCase):
         response = line_notify.notify(message, image_thumbnail=image_thumbnail, image_fullsize=image_fullsize)
         self.assertIsInstance(response, NotifyResponse)
         self.assertIsInstance(response.body, NotifyResponse.NotifyResponseBody)
-        self.assertEqual(response.status, 200)
+        self.assertEqual(response.body.status, 200)
         self.assertEqual(response.body.message, "ok")
 
     def test_notify_with_sticker(self) -> None:
@@ -75,7 +75,7 @@ class TestLineNotify(unittest.TestCase):
         )
         self.assertIsInstance(response, NotifyResponse)
         self.assertIsInstance(response.body, NotifyResponse.NotifyResponseBody)
-        self.assertEqual(response.status, 200)
+        self.assertEqual(response.body.status, 200)
         self.assertEqual(response.body.message, "ok")
 
 

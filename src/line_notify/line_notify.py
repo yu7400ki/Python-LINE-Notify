@@ -88,7 +88,11 @@ class LineNotify:
         if files is not None:
             f.close()
 
-        return NotifyResponse(response)
+        response.__class__ = NotifyResponse
+
+        assert isinstance(response, NotifyResponse)
+
+        return response
 
     def status(self, timeout: _Timeout = None) -> StatusResponse:
         """Get status of LINE Notify
@@ -111,4 +115,8 @@ class LineNotify:
         except requests.exceptions.ReadTimeout as e:
             raise LineNotifyReadTimeout(e)
 
-        return StatusResponse(response)
+        response.__class__ = StatusResponse
+
+        assert isinstance(response, StatusResponse)
+
+        return response
